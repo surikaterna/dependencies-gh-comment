@@ -1,16 +1,16 @@
 import * as core from '@actions/core';
-import { someFunc } from './someFunc';
+import { commentOnPullRequest } from './commentOnPullRequest';
+import { parseDependencies } from './parseDependencies';
+import { createMarkdown } from './createMarkdown';
 
 async function run(): Promise<void> {
   try {
-    // Read from previous actions
-    const someInput = core.getInput('some-input');
+    const input = core.getInput('dependencies');
 
-    // ...logic
-    const someOutput = await someFunc(someInput);
-
-    // Set output for following actions
-    core.setOutput('some-output', someOutput);
+    const dependencies = parseDependencies(input);
+    const markdown = createMarkdown(dependencies);
+    await commentOnPullRequest(markdown);
+    // Create/update PR comment
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message);

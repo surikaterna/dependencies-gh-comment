@@ -11,5 +11,18 @@ inputs:
     description: 'The ID of the GitHub comment, for updating comment if existing'
     default: 'dependencies-comment'
 runs:
-  using: node16
-  main: lib/index.js
+  using: composite
+  steps:
+    - name: Install patched Node.js
+      uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      with:
+        node-version: '22.23.4'
+        package-manager-cache: false
+    - name: Update dependency comment
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        INPUT_DEPENDENCIES: ${{ inputs.dependencies }}
+        INPUT_TOKEN: ${{ inputs.token }}
+        INPUT_COMMENT-ID: ${{ inputs.comment-id }}
+      run: node "$ACTION_PATH/lib/index.js"
